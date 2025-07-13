@@ -35,7 +35,9 @@ ptr-utils = { version = "0.1.0", default-features = false }
 
 ## Usage
 
-### Basic Example
+### Unaligned Read/Write Operations
+
+Works with byte pointers as usual:
 
 ```rust
 use ptr_utils::{UnalignedRead, UnalignedWrite};
@@ -53,7 +55,7 @@ unsafe {
 }
 ```
 
-### Working with Different Pointer Types
+But you can also use it with pointers for other basic types:
 
 ```rust
 use ptr_utils::{UnalignedRead, UnalignedWrite};
@@ -67,22 +69,6 @@ unsafe {
     typed_ptr.write_u16_at(3, 0xABCD); // byte offset 3
     let value = typed_ptr.read_u16_at(3);
     assert_eq!(value, 0xABCD);
-}
-```
-
-### Parsing Binary Data
-
-```rust
-use ptr_utils::UnalignedRead;
-
-fn parse_header(data: &[u8]) -> (u32, u16, u64) {
-    let ptr = data.as_ptr();
-    unsafe {
-        let magic = ptr.read_u32_at(0);      // byte offset 0
-        let version = ptr.read_u16_at(4);    // byte offset 4
-        let timestamp = ptr.read_u64_at(6);  // byte offset 6
-        (magic, version, timestamp)
-    }
 }
 ```
 
