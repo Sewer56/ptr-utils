@@ -44,7 +44,7 @@ let mut buffer = [0u8; 16];
 let ptr = buffer.as_mut_ptr();
 
 unsafe {
-    // Write a u32 at offset 1 (unaligned)
+    // Write a u32 at byte offset 1 (unaligned)
     ptr.write_u32_at(1, 0x12345678);
     
     // Read it back
@@ -64,7 +64,7 @@ let typed_ptr: *mut u64 = data.as_mut_ptr();
 
 unsafe {
     // No need to cast to *mut u8 first
-    typed_ptr.write_u16_at(3, 0xABCD);
+    typed_ptr.write_u16_at(3, 0xABCD); // byte offset 3
     let value = typed_ptr.read_u16_at(3);
     assert_eq!(value, 0xABCD);
 }
@@ -78,9 +78,9 @@ use ptr_utils::UnalignedRead;
 fn parse_header(data: &[u8]) -> (u32, u16, u64) {
     let ptr = data.as_ptr();
     unsafe {
-        let magic = ptr.read_u32_at(0);
-        let version = ptr.read_u16_at(4);
-        let timestamp = ptr.read_u64_at(6);
+        let magic = ptr.read_u32_at(0);      // byte offset 0
+        let version = ptr.read_u16_at(4);    // byte offset 4
+        let timestamp = ptr.read_u64_at(6);  // byte offset 6
         (magic, version, timestamp)
     }
 }
