@@ -5,17 +5,90 @@
 [![CI](https://github.com/Sewer56/ptr-utils/actions/workflows/rust.yml/badge.svg)](https://github.com/Sewer56/ptr-utils/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-A lightweight, `no_std` compatible library providing utilities for working with raw pointers in Rust.
+## Why This Library?
 
-## Features
+This library exists primarily for ergonomics. Compare writing pointer operations manually versus using `ptr-utils`:
 
-Provides miscellaneous utility methods for raw pointers to write cleaner code:
+**Before** (manual pointer casting):
+```rust
+/// # Safety
+///
+/// - input_ptr must be valid for reads of len bytes
+/// - output_ptr must be valid for writes of len bytes
+pub(crate) unsafe fn u32_untransform_with_separate_pointers(
+    mut alpha_byte_in_ptr: *const u16,
+    mut alpha_bit_in_ptr: *const u16,
+    mut color_byte_in_ptr: *const u32,
+    mut index_byte_in_ptr: *const u32,
+    mut current_output_ptr: *mut u8,
+    len: usize,
+) {
+    let alpha_byte_end_ptr = alpha_byte_in_ptr.add(len / 16);
+    while alpha_byte_in_ptr < alpha_byte_end_ptr {
+        // Alpha bytes (2 bytes)
+        (current_output_ptr as *mut u16).write_unaligned(alpha_byte_in_ptr.read_unaligned());
+        alpha_byte_in_ptr = alpha_byte_in_ptr.add(1);
 
-- **Unaligned Operations**: Read/write primitives without alignment requirements
-- **Zero-Cost**: All operations inline to the same assembly as manual casts
-- **Type Safety**: Avoid explicit pointer casts while keeping safety contracts
-- **All Primitives**: Support for integers, floats, and booleans
-- **`no_std` Compatible**: Works in embedded environments
+        // Alpha bits (6 bytes)
+        (current_output_ptr.add(2) as *mut u16).write_unaligned(alpha_bit_in_ptr.read_unaligned());
+        (current_output_ptr.add(4) as *mut u32)
+            .write_unaligned((alpha_bit_in_ptr.add(1) as *const u32).read_unaligned());
+        alpha_bit_in_ptr = alpha_bit_in_ptr.add(3);
+
+        // Color bytes (4 bytes)
+        (current_output_ptr.add(8) as *mut u32).write_unaligned(color_byte_in_ptr.read_unaligned());
+        color_byte_in_ptr = color_byte_in_ptr.add(1);
+
+        // Index bytes (4 bytes)
+        (current_output_ptr.add(12) as *mut u32)
+            .write_unaligned(index_byte_in_ptr.read_unaligned());
+        index_byte_in_ptr = index_byte_in_ptr.add(1);
+        current_output_ptr = current_output_ptr.add(16);
+    }
+}
+```
+
+**After** (with `ptr-utils`):
+
+```rust
+use ptr_utils::{UnalignedRead, UnalignedWrite};
+
+/// # Safety
+///
+/// - input_ptr must be valid for reads of len bytes
+/// - output_ptr must be valid for writes of len bytes
+pub(crate) unsafe fn u32_untransform_with_separate_pointers(
+    mut alpha_byte_in_ptr: *const u16,
+    mut alpha_bit_in_ptr: *const u16,
+    mut color_byte_in_ptr: *const u32,
+    mut index_byte_in_ptr: *const u32,
+    mut current_output_ptr: *mut u8,
+    len: usize,
+) {
+    let alpha_byte_end_ptr = alpha_byte_in_ptr.add(len / 16);
+    while alpha_byte_in_ptr < alpha_byte_end_ptr {
+        // Alpha bytes (2 bytes)
+        current_output_ptr.write_u16_at(0, alpha_byte_in_ptr.read_u16_at(0));
+        alpha_byte_in_ptr = alpha_byte_in_ptr.add(1);
+
+        // Alpha bits (6 bytes)
+        current_output_ptr.write_u16_at(2, alpha_bit_in_ptr.read_u16_at(0));
+        current_output_ptr.write_u32_at(4, alpha_bit_in_ptr.read_u32_at(2));
+        alpha_bit_in_ptr = alpha_bit_in_ptr.add(3);
+
+        // Color bytes (4 bytes)
+        current_output_ptr.write_u32_at(8, color_byte_in_ptr.read_u32_at(0));
+        color_byte_in_ptr = color_byte_in_ptr.add(1);
+
+        // Index bytes (4 bytes)
+        current_output_ptr.write_u32_at(12, index_byte_in_ptr.read_u32_at(0));
+        index_byte_in_ptr = index_byte_in_ptr.add(1);
+        current_output_ptr = current_output_ptr.add(16);
+    }
+}
+```
+
+The library eliminates repetitive `as *mut T` and `as *const T` casts while maintaining the same safety contracts and zero-cost abstractions.
 
 ## Installation
 
@@ -71,6 +144,8 @@ unsafe {
     assert_eq!(value, 0xABCD);
 }
 ```
+
+The operations always take byte offsets; for simplicity.
 
 ## API Overview
 
