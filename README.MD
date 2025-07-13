@@ -193,8 +193,6 @@ Full API documentation is available on [docs.rs](https://docs.rs/ptr-utils).
 
 Licensed under [MIT](./LICENSE).
 
-[Learn more about Reloaded's general choice of licensing for projects.][reloaded-license].
-
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
