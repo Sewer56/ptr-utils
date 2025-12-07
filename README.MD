@@ -181,23 +181,14 @@ This library provides `unsafe` functions that require careful use:
 - `std` (default): Enables standard library support
 - Default features can be disabled for `no_std` environments
 
-## Development
+## Developer Manual
 
-For information on how to work with this codebase, see [README-DEV.MD](README-DEV.MD).
+For step-by-step development guidance, see the [Developer Manual](https://reloaded-project.github.io/reloaded-templates-rust/manual/).
 
-## Documentation
+## Contributing
 
-Full API documentation is available on [docs.rs](https://docs.rs/ptr-utils).
+We welcome contributions! See the [Contributing Guide](https://reloaded-project.github.io/reloaded-templates-rust/manual/#contributing) for details.
 
 ## License
 
 Licensed under [MIT](./LICENSE).
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
-
-[codecov]: https://about.codecov.io/
-[crates-io-key]: https://crates.io/settings/tokens
-[nuget-key]: https://www.nuget.org/account/apikeys
-[reloaded-license]: https://reloaded-project.github.io/Reloaded.MkDocsMaterial.Themes.R2/Pages/license/

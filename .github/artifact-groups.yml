@@ -1,0 +1,4 @@
+Symbols:
+  patterns: "*.symbols"
+  renames:
+    - ".symbols": ""
