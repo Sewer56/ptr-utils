@@ -4,7 +4,7 @@
     {
       "label": "Auto Test on Save",
       "type": "shell",
-      "command": "cargo watch -x \"test\" -w ptr-utils/src",
+      "command": "cargo install cargo-watch --quiet && cargo watch -x \"test\" -w ptr-utils/src",
       "group": "test",
       "presentation": {
         "reveal": "always"
