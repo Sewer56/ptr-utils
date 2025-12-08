@@ -1,6 +1,6 @@
 [package]
 name = "ptr-utils"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "A lightweight library providing utilities for working with raw pointers."
 repository = "https://github.com/Sewer56/ptr-utils"
